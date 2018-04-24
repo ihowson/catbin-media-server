@@ -46,9 +46,17 @@ Edit `ansible/inventory` with your server's IP address.
 
 'premigration' installs the base system enough to interact with ZFS. The idea is that you run this, move the root partition to ZFS, reboot and continue main installation afterward.
 
-If you don't want your root partition on ZFS, feel free to skip ahead to 'Run the main playbook'.
+Note that we require [Ansible Python3 support](https://docs.ansible.com/ansible/devel/reference_appendices/python_3_support.html). On your local computer (not the server):
 
-Run:
+    brew uninstall ansible
+    pip3 install ansible
+
+If you don't want your root partition on ZFS:
+
+- Install Aptitude (`apt-get install aptitude`)
+- Skip ahead to 'Run the main playbook'
+
+Otherwise, run:
 
     ansible-playbook -i config/inventory tasks/premigration.yml -b -K
 
