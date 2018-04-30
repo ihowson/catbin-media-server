@@ -1,0 +1,62 @@
+---
+- name: Update apt-cache
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: Install some packages
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - aptitude
+    - docker-compose
+    - fish
+    - lm-sensors
+    - smartmontools
+    - unzip
+    - zfs-auto-snapshot
+    - zfs-dkms
+
+- name: "Set hostname to {{ ansible_nas_hostname }}"
+  hostname:
+    name: "{{ ansible_nas_hostname }}"
+
+- name: add user account to docker group
+  user:
+    name: "{{ ansible_nas_user }}"
+    group: docker
+    append: yes
+    shell: fish
+
+# configure docker to store its data somewhere on zfs (/d/docker) and to use the zfs storage engine. see docker_home and docker_storage_driver in config/all.yml . docker.yml in ansible-nas shows how to do this
+
+# configure zfs-auto-snapshot
+
+# zpool import -a? the volumes need to be available
+# set up ssh key only to ssh
+# configure users and groups -- ian, kandice, media
+
+      # addgroup --gid 2000 media
+      # adduser --system --no-create-home --disabled-password --disabled-login --uid 2000 --gid 2000 media
+    # what are you trying to isolate here?
+    # how do you get everything chmodded correctly? umask or something
+# set up samba
+
+# set up the filesystem layout from the 'filesystem' directory
+  # some stuff needs to be created with uid/gid 2000
+  # chown -R media.media downloads/ tv/ containers/sonarr/ containers/transmission/ containers/plex/
+  # chmod -R 750 downloads/ tv/ containers/sonarr/ containers/transmission/ containers/plex/
+      # - /d/tv:/media/tv
+      # - /d/movies:/media/movies
+      # - /d/music:/media/music
+      # - /d/childrens:/media/childrens
+
+# to reload dc config
+# docker-compose up -d
+
+# crashplan
+
+# set up docker services -- put this in a separate playbook 'services.yml' so you only need to rerun it when you change docker config
+
+# configure samba user accounts; can they just sync against unix accounts?

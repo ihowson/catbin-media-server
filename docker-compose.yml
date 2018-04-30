@@ -1,0 +1,76 @@
+version: '2'
+
+services:
+  portainer:
+    image: portainer/portainer
+    command: -H unix:///var/run/docker.sock
+    container_name: portainer
+    restart: always
+    ports:
+      - "9000:9000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /d/containers/portainer:/data
+
+  sonarr:
+    image: linuxserver/sonarr
+    container_name: sonarr
+    environment:
+      # FIXME: 'media' user is fixed uid/gid. Would be better to look this up somewhere or at least make it configurable!
+      PGID: 2000
+      PUID: 2000
+    ports:
+      - "8989:8989"   # FIXME: shouldn't you be reverse proxying this or something? this is easier
+    restart: always
+    volumes:
+      - /dev/rtc:/dev/rtc:ro
+      - /d/containers/sonarr:/config
+      - /d/tv:/tv
+      - /d/downloads/:/downloads
+
+  plex:
+    image: linuxserver/plex
+    environment:
+      PGID: 2000
+      PUID: 2000
+      TZ: PST
+      VERSION: latest
+      PLEX_CLAIM: ""
+    volumes:
+      - /d/containers/plex:/config
+      - /d/downloads/:/downloads
+      - /d/tv:/media/tv
+      - /d/movies:/media/movies
+      - /d/music:/media/music
+      - /d/childrens:/media/childrens
+    network_mode: host
+
+  transmission:
+    container_name: transmission
+    image: linuxserver/transmission
+    volumes:
+      - /d/containers/transmission:/config
+      - /d/downloads:/downloads
+    environment:
+      PGID: 2000
+      PUID: 2000
+      TZ: PST
+    ports:
+      - "9091:9091"
+      - "51413:51413"
+
+  beets:
+    container_name: beets
+    image: linuxserver/beets
+    volumes:
+      - /d/containers/beets:/config
+      - /d/music:/music
+      - /d/downloads/_checked:/downloads
+    environment:
+      PGID: 2000
+      PUID: 2000
+    ports:
+      # - "1234:1234"
+      - "8337:8337"
+
+# muximux

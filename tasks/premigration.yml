@@ -6,12 +6,6 @@
       update_cache: yes
       cache_valid_time: 3600
 
-  # - name: Upgrade all packages
-  #   apt:
-  #     name: "*"
-  #     state: latest
-    #when: keep_packages_updated == true
-
   - name: Install some packages
     apt:
       name: "{{ item }}"
@@ -19,4 +13,4 @@
       force_apt_get: True
     with_items:
       - aptitude
-      - zfs
+      - zfs-dkms

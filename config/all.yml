@@ -1,0 +1,34 @@
+# Sets the hostname of your Ansible NAS
+ansible_nas_hostname: catbin
+
+# Will be added to the docker group to give user command line access to docker
+ansible_nas_user: ian
+
+# Where you want Docker to store its images and container data.
+docker_home: /d/docker
+
+# Docker storage driver, see https://docs.docker.com/storage/storagedriver/select-storage-driver/#supported-backing-filesystems
+# You'll need to change this if your docker_home isn't on zfs and Docker won't start (you'll probably want overlay2 instead)
+docker_storage_driver: zfs
+
+###
+### Samba
+###
+# The account used when Samba shares are accessed. Shouldn't need to change this unless you want to
+# mess with Samba user permissions.
+samba_guest_account: nobody
+
+# Shares you want published over Samba.
+samba_shares:
+  - name: downloads
+    comment: 'Downloads'
+    guest_ok: no
+    public: yes
+    path: /d/downloads
+
+  - name: share
+    comment: 'Share'
+    guest_ok: no
+    public: yes
+    writable: yes
+    path: /d/share

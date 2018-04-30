@@ -62,6 +62,8 @@ Otherwise, run:
 
 6. Set up your ZFS volumes
 
+At the end of this step, there must be some storage available at the `/d/` directory. Ansible will create a simple filesystem layout starting at this location.
+
 How you do this depends on what you're trying to build, but here's how I do it.
 
 TODO
@@ -70,19 +72,30 @@ TODO
 
 TODO
 
+https://github.com/zfsonlinux/zfs/wiki/Ubuntu-16.04-Root-on-ZFS
+https://github.com/zfsonlinux/pkg-zfs/wiki/HOWTO-install-Ubuntu-17.04-to-a-Whole-Disk-Native-ZFS-Root-Filesystem-using-Ubiquity-GUI-installer
+
 Move the old root partition to make sure you're not accidentally running it.
 
 Reboot to make sure everything is working correctly.
 
-8. Run the main playbook
+8. Run the 'onetime' playbook
 
-    ansible-playbook -i config/inventory playbook.yml -b -K
+This playbook sets up the machine to host services. You probably only ever need it once.
 
-(`deploy-main.sh` does this, so you don't have to constantly refer back to these docs.)
+    ansible-playbook -i config/inventory onetime.yml -b -K
+
+9. Run the 'main' playbook
 
 This will install all of the applications, containers and configs.
 
-9. Enjoy!
+    ansible-playbook -i config/inventory main.yml -b -K
+
+In practice, machine configuration changes over time, so you will run this every time you make a change.
+
+I tend to forget the above command line, so the shell script `deploy-main.sh` does this for you.
+
+10. Enjoy!
 
 To get started, navigate to http://{server ip}/
 
@@ -93,8 +106,6 @@ You will probably want to change configs and applications at some point.
 One of my Lessons Learned From Tyler (tm) was that it's difficult to keep track of changes as the machine ages.
 
 The better way is to fork and modify this repo and use Ansible to deploy your changes. This way, you have a log of what's changed and can reproduce it anytime.
-
-    ansible-playbook -i config/inventory playbook.yml -b -K
 
 `docker-compose.yml` is pretty key in this; it defines what applications are deployed and parts of their config.
 
@@ -118,11 +129,29 @@ Nowadays I just use Plex with Roku or Apple TV devices. This isn't quite as nice
 
 ## What does 'catbin' mean?
 
-We lived in Munich for a while. { TODO story }
+We lived in Munich for a while. A nice lady up the road had a model wooden cat sitting next to her outdoor bins. My toddler called the cat 'catbin'.
 
 ## Mirroring or RAIDZ2?
 
 TODO
+
+## User design
+
+Most of the applications run in Docker containers and other parts use Unix user access controls.
+
+All media files are created with the user and group 'media', expected to be at UID 2000 and GID 2000. Files are created with perms 750, so other users in the 'media' group can read them but not modify them.
+
+## Service ports
+
+Transmission is configured to accept incoming connections on port 51413
+
+For web access:
+
+- Portainer: 9000
+- Sonarr: 8989
+- Transmission: 9091
+- Plex: 32400
+- Beets: 8337
 
 ## Lessons learned from tyler
 

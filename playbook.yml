@@ -1,0 +1,23 @@
+# based on https://github.com/davestephens/ansible-nas/blob/master/nas.yml
+---
+- hosts: all
+  tasks:
+  - import_tasks: tasks/general.yml
+
+  - import_tasks: tasks/docker.yml
+
+  - import_tasks: tasks/portainer.yml
+    tags: portainer
+
+  - import_tasks: tasks/transmission.yml
+    tags: transmission
+
+  # - import_tasks: tasks/transmission_with_openvpn.yml
+  #   tags: transmission
+
+  - import_tasks: tasks/sonarr.yml
+    tags: sonarr
+
+  # - import_tasks: tasks/stats.yml
+  #   tags: stats
+
